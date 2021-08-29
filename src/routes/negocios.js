@@ -1,0 +1,10 @@
+const express = require('express');
+const router = express.Router();
+const negocioController = require('../controllers/negocioController');
+const multerUpload = require('../middlewares/multerConfig');
+
+router.get('/', negocioController.getAllNegocios);
+router.get('/:negocioId', negocioController.getNegocio);
+router.post('/', multerUpload, negocioController.postNegocio);
+
+module.exports = router;

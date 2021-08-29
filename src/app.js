@@ -1,8 +1,12 @@
 const express = require('express');
 const morgan = require('morgan');
 const cors = require("cors");
+const mongoose = require("mongoose");
+const dotenv = require('dotenv');
+dotenv.config({path: __dirname + '/.env.local'});
 
 const holaMundo = require ("./routes/holaMundo")
+const negociosRoute = require("./routes/negocios")
 
 //INICIALIZACIONES-------------------------------------------------
 const app = express();
@@ -22,8 +26,20 @@ app.set('json spaces', 2);
 //ROUTES-----------------------------------------------
 //app.use(require('./routes/videos.route'));
 app.use(holaMundo);
+app.use('/negocios', negociosRoute);
 
 //STATIC-FILES-----------------------------------------
 
+//DB-CONNECTION----------------------------------------
+try {
+    const dbConnection = mongoose.connect(process.env.MONGODB_URI, 
+        {useNewUrlParser: true, useUnifiedTopology: true}, 
+        function() {
+            console.log('Connected to database');
+    });
+}
+catch(err){
+    console.log(err);
+}
 
 module.exports=app
