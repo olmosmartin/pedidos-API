@@ -29,7 +29,7 @@ const postNegocio = async (req, res) => {
             productos: [],
             imagen: {
                 data: req.file.buffer,
-                contentType: 'image/png'
+                contentType: req.file.mimetype
             }
         });
 
