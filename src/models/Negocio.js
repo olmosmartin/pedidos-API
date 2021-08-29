@@ -15,8 +15,8 @@ const NegocioSchema = mongoose.Schema({
         required: true
     },
     imagen: {
-        data: Buffer,
-        contentType: String
+        type: String,
+        required: true
     },
     productos: [productoSchema]
 });

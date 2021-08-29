@@ -27,10 +27,7 @@ const postNegocio = async (req, res) => {
             email: req.body.email,
             telefono: req.body.telefono,
             productos: [],
-            imagen: {
-                data: req.file.buffer,
-                contentType: req.file.mimetype
-            }
+            imagen: 'data:' +req.file.mimetype + ';base64,'+ req.file.buffer.toString("base64")
         });
 
         const savedNegocio = await negocio.save();
