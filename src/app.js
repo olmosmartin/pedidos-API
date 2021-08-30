@@ -5,8 +5,8 @@ const mongoose = require("mongoose");
 const dotenv = require('dotenv');
 dotenv.config({path: __dirname + '/.env.local'});
 
-const holaMundo = require ("./routes/holaMundo")
 const negociosRoute = require("./routes/negocios")
+const productosRoute = require("./routes/productos")
 
 //INICIALIZACIONES-------------------------------------------------
 const app = express();
@@ -25,8 +25,8 @@ app.set('json spaces', 2);
 
 //ROUTES-----------------------------------------------
 //app.use(require('./routes/videos.route'));
-app.use(holaMundo);
 app.use('/negocios', negociosRoute);
+app.use('/productos', productosRoute);
 
 //STATIC-FILES-----------------------------------------
 
