@@ -42,7 +42,7 @@ const postNegocio = async (req, res) => {
 const patchNegocio = async (req, res) => {
     try{
         const updatedNegocio = await Negocio.updateOne(
-            { _id: req.params.postId }, 
+            { _id: req.params.negocioId }, 
             { $set: { 
                     telefono: req.body.telefono,
                     productos: req.body.productos,
@@ -50,11 +50,11 @@ const patchNegocio = async (req, res) => {
                     imagen: 'data:' +req.file.mimetype + ';base64,'+ req.file.buffer.toString("base64")
                 } 
             }
-        )
-        res.json(updatedNegocio)
-        res.end()
+        );
+        res.json(updatedNegocio);
+        res.end();
     } catch(err){
-        res.status(400).send(err)
+        res.status(400).send(err);
     }
 }
 
