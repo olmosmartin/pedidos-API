@@ -26,7 +26,8 @@ const postNegocio = async (req, res) => {
             nombre: req.body.nombre,
             email: req.body.email,
             telefono: req.body.telefono,
-            productos: [],
+            productos: req.body.productos,
+            sucursales: req.body.sucursales,
             imagen: 'data:' +req.file.mimetype + ';base64,'+ req.file.buffer.toString("base64")
         });
 
@@ -38,8 +39,28 @@ const postNegocio = async (req, res) => {
     }
 }
 
+const patchNegocio = async (req, res) => {
+    try{
+        const updatedPost = await Post.updateOne(
+            { _id: req.params.postId }, 
+            { $set: { 
+                    telefono: req.body.telefono,
+                    productos: req.body.productos,
+                    sucursales: req.body.sucursales,
+                    imagen: 'data:' +req.file.mimetype + ';base64,'+ req.file.buffer.toString("base64")
+                } 
+            }
+        )
+        res.json(updatedPost)
+        res.end()
+    } catch(err){
+        res.status(400).send(err)
+    }
+}
+
 module.exports = {
     getNegocio, 
     getAllNegocios,
-    postNegocio
+    postNegocio,
+    patchNegocio
 }

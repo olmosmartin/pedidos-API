@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
-const productoSchema = require('./Producto').schema
+const productoSchema = require('./Producto').schema;
+const sucursalSchema = require('./Sucursal').schema;
 
 const NegocioSchema = mongoose.Schema({
     nombre: {
@@ -18,7 +19,8 @@ const NegocioSchema = mongoose.Schema({
         type: String,
         required: true
     },
-    productos: [productoSchema]
+    productos: [productoSchema],
+    sucursales: [sucursalSchema]
 });
 
 module.exports = mongoose.model('Negocio', NegocioSchema);
