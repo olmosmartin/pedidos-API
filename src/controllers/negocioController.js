@@ -1,4 +1,5 @@
 const Negocio = require('../models/Negocio');
+const Producto = require('../models/Producto');
 
 const getNegocio = async (req, res) => {
     try{
@@ -26,8 +27,8 @@ const postNegocio = async (req, res) => {
             nombre: req.body.nombre,
             email: req.body.email,
             telefono: req.body.telefono,
-            productos: req.body.productos,
-            sucursales: req.body.sucursales,
+            productos: [],
+            sucursales: [],
             imagen: 'data:' +req.file.mimetype + ';base64,'+ req.file.buffer.toString("base64")
         });
 
@@ -44,9 +45,9 @@ const patchNegocio = async (req, res) => {
         const updatedNegocio = await Negocio.updateOne(
             { _id: req.params.negocioId }, 
             { $set: { 
+                    nombre: req.body.nombre,
+                    email: req.body.email,
                     telefono: req.body.telefono,
-                    productos: req.body.productos,
-                    sucursales: req.body.sucursales,
                     imagen: 'data:' +req.file.mimetype + ';base64,'+ req.file.buffer.toString("base64")
                 } 
             }
@@ -58,9 +59,30 @@ const patchNegocio = async (req, res) => {
     }
 }
 
+const postProducto = async (req, res) => {
+    try{
+        const producto = new Producto({
+            nombre: req.body.nombre,
+            descripcion: req.body.descripcion,
+            imagen: 'data:' + req.file.mimetype + ';base64,'+ req.file.buffer.toString("base64"),
+            precio: req.body.precio
+        });
+
+        const updatedNegocio = await Negocio.updateOne(
+            { _id: req.params.negocioId },
+            { $push: {productos: producto} }
+        );
+        res.json(updatedNegocio);
+        res.end();
+    } catch(err) {
+        res.status(400).send(err);
+    }
+}
+
 module.exports = {
     getNegocio, 
     getAllNegocios,
     postNegocio,
-    patchNegocio
+    patchNegocio,
+    postProducto
 }

@@ -24,6 +24,7 @@ const postProducto = async (req, res) => {
     try{
         const producto = new Producto({
             nombre: req.body.nombre,
+            descripcion: req.body.descripcion,
             imagen: 'data:' + req.file.mimetype + ';base64,'+ req.file.buffer.toString("base64"),
             precio: req.body.precio
         });
