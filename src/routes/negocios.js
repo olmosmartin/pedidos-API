@@ -7,6 +7,6 @@ router.get('/', negocioController.getAllNegocios);
 router.get('/:negocioId', negocioController.getNegocio);
 router.post('/', multerUpload, negocioController.postNegocio);
 router.post('/:negocioId/productos', multerUpload, negocioController.postProducto);
-router.patch('/:negocioId', negocioController.patchNegocio);
+router.put('/:negocioId', multerUpload, negocioController.updateNegocio);
 
 module.exports = router;

@@ -1,5 +1,6 @@
 const Negocio = require('../models/Negocio');
 const Producto = require('../models/Producto');
+const Direccion = require('../models/Direccion');
 
 const getNegocio = async (req, res) => {
     try{
@@ -13,7 +14,9 @@ const getNegocio = async (req, res) => {
 
 const getAllNegocios = async (req, res) => {
     try{
-        const negocios = await Negocio.find();
+        const negocios = await Negocio.find({
+            ...req.query.ciudad ? { 'direccion.ciudad': req.query.ciudad } : {}
+        });
         res.json(negocios);
         res.end();
     } catch(err) {
@@ -23,12 +26,20 @@ const getAllNegocios = async (req, res) => {
 
 const postNegocio = async (req, res) => {
     try{
+        const direccion = new Direccion({
+            latitud: req.body.latitud,
+            longitud: req.body.longitud,
+            ciudad: req.body.ciudad,
+            calle: req.body.calle,
+            numero: req.body.numero
+        });
+
         const negocio = new Negocio({
             nombre: req.body.nombre,
             email: req.body.email,
             telefono: req.body.telefono,
+            direccion: direccion,
             productos: [],
-            sucursales: [],
             imagen: 'data:' +req.file.mimetype + ';base64,'+ req.file.buffer.toString("base64")
         });
 
@@ -40,22 +51,31 @@ const postNegocio = async (req, res) => {
     }
 }
 
-const patchNegocio = async (req, res) => {
+const updateNegocio = async (req, res) => {
     try{
+        const direccion = new Direccion({
+            latitud: req.body.latitud,
+            longitud: req.body.longitud,
+            ciudad: req.body.ciudad,
+            calle: req.body.calle,
+            numero: req.body.numero
+        });
+
         const updatedNegocio = await Negocio.updateOne(
             { _id: req.params.negocioId }, 
             { $set: { 
                     nombre: req.body.nombre,
                     email: req.body.email,
                     telefono: req.body.telefono,
-                    imagen: 'data:' +req.file.mimetype + ';base64,'+ req.file.buffer.toString("base64")
+                    direccion: direccion,
+                    imagen: 'data:' + req.file.mimetype + ';base64,'+ req.file.buffer.toString("base64")
                 } 
             }
         );
         res.json(updatedNegocio);
         res.end();
     } catch(err){
-        res.status(400).send(err);
+        res.status(400).send(err.message);
     }
 }
 
@@ -83,6 +103,6 @@ module.exports = {
     getNegocio, 
     getAllNegocios,
     postNegocio,
-    patchNegocio,
+    updateNegocio,
     postProducto
 }

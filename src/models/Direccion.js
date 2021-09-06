@@ -1,7 +1,15 @@
 const mongoose = require('mongoose');
 
 const DireccionSchema = mongoose.Schema({
-    localidad: {
+    latitud: {
+        type: Number,
+        required: true
+    },
+    longitud: {
+        type: Number,
+        required: true
+    },
+    ciudad: {
         type: String,
         required: true
     },
@@ -9,8 +17,10 @@ const DireccionSchema = mongoose.Schema({
         type: String,
         required: true
     },
-    nro: {
+    numero: {
         type: Number,
         required: true
     }
 });
+
+module.exports = mongoose.model('Direccion', DireccionSchema);
