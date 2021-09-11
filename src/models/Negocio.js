@@ -1,18 +1,12 @@
 const mongoose = require('mongoose');
-const productoSchema = require('./Producto').schema;
-const direccionSchema = require('./Direccion').schema;
+const ProductoSchema = require('./Producto').schema;
+const DireccionSchema = require('./Direccion').schema;
+const UsuarioSchema = require('./Usuario').schema;
 
 const NegocioSchema = mongoose.Schema({
-    nombre: {
-        type: String,
-        required: true
-    },
-    email: {
-        type: String,
-        required: true
-    },
-    telefono: {
-        type: String,
+    usuario: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Usuario',
         required: true
     },
     imagen: {
@@ -20,9 +14,10 @@ const NegocioSchema = mongoose.Schema({
         required: true
     },
     direccion: {
-        type: direccionSchema
+        type: DireccionSchema,
+        required: true
     },
-    productos: [productoSchema],
+    productos: [ProductoSchema]
 });
 
 module.exports = mongoose.model('Negocio', NegocioSchema);

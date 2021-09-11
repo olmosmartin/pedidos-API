@@ -1,10 +1,12 @@
 const Negocio = require('../models/Negocio');
 const Producto = require('../models/Producto');
 const Direccion = require('../models/Direccion');
+const Usuario = require('../models/Usuario');
+const bcrypt = require('bcryptjs');
 
 const getNegocio = async (req, res) => {
     try{
-        const negocios = await Negocio.findById(req.params.negocioId);
+        const negocios = await Negocio.findById(req.params.negocioId).populate('usuario');
         res.json(negocios);
         res.end();
     } catch(err) {
@@ -16,7 +18,7 @@ const getAllNegocios = async (req, res) => {
     try{
         const negocios = await Negocio.find({
             ...req.query.ciudad ? { 'direccion.ciudad': req.query.ciudad } : {}
-        });
+        }).populate('usuario');
         res.json(negocios);
         res.end();
     } catch(err) {
@@ -26,6 +28,21 @@ const getAllNegocios = async (req, res) => {
 
 const postNegocio = async (req, res) => {
     try{
+        const emailExists = await Usuario.findOne({ email: req.body.email });
+        if(emailExists) return res.status(400).send('El email ingresado ya existe');
+
+        const salt = await bcrypt.genSalt(12);
+        const hashedPassword = await bcrypt.hash(req.body.password, salt);
+
+        const usuario = new Usuario({
+            nombre: req.body.nombre,
+            email: req.body.email,
+            password: hashedPassword,
+            telefono: req.body.telefono,
+            role: 'NEGOCIO'
+        });
+        await usuario.save();
+
         const direccion = new Direccion({
             latitud: req.body.latitud,
             longitud: req.body.longitud,
@@ -35,15 +52,15 @@ const postNegocio = async (req, res) => {
         });
 
         const negocio = new Negocio({
-            nombre: req.body.nombre,
-            email: req.body.email,
-            telefono: req.body.telefono,
+            usuario: usuario,
             direccion: direccion,
             productos: [],
             imagen: 'data:' +req.file.mimetype + ';base64,'+ req.file.buffer.toString("base64")
         });
 
-        const savedNegocio = await negocio.save();
+        var savedNegocio = await negocio.save();
+        savedNegocio = savedNegocio.toJSON();
+        delete savedNegocio.usuario.password;
         res.json(savedNegocio);
         res.end();
     } catch(err) {
@@ -62,11 +79,8 @@ const updateNegocio = async (req, res) => {
         });
 
         const updatedNegocio = await Negocio.updateOne(
-            { _id: req.params.negocioId }, 
+            { usuario: req.params.negocioId }, 
             { $set: { 
-                    nombre: req.body.nombre,
-                    email: req.body.email,
-                    telefono: req.body.telefono,
                     direccion: direccion,
                     imagen: 'data:' + req.file.mimetype + ';base64,'+ req.file.buffer.toString("base64")
                 } 
@@ -89,12 +103,13 @@ const postProducto = async (req, res) => {
         });
 
         const updatedNegocio = await Negocio.updateOne(
-            { _id: req.params.negocioId },
+            { usuario: req.params.negocioId },
             { $push: {productos: producto} }
         );
         res.json(updatedNegocio);
         res.end();
     } catch(err) {
+        console.log(err);
         res.status(400).send(err);
     }
 }

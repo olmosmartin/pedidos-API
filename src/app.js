@@ -5,8 +5,9 @@ const mongoose = require("mongoose");
 const dotenv = require('dotenv');
 dotenv.config({path: __dirname + '/.env.local'});
 
-const negociosRoute = require("./routes/negocios")
-const productosRoute = require("./routes/productos")
+const negociosRoute = require("./routes/negocios");
+const productosRoute = require("./routes/productos");
+const usuariosRoute = require('./routes/usuarios');
 
 //INICIALIZACIONES-------------------------------------------------
 const app = express();
@@ -27,6 +28,7 @@ app.set('json spaces', 2);
 //app.use(require('./routes/videos.route'));
 app.use('/negocios', negociosRoute);
 app.use('/productos', productosRoute);
+app.use('/usuarios', usuariosRoute);
 
 //STATIC-FILES-----------------------------------------
 
@@ -35,7 +37,7 @@ try {
     const dbConnection = mongoose.connect(process.env.MONGODB_URI, 
         {useNewUrlParser: true, useUnifiedTopology: true}, 
         function() {
-            console.log('Connected to database');
+            console.log('Conectado a la base de datos');
     });
 }
 catch(err){
