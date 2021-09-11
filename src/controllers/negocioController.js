@@ -70,6 +70,8 @@ const postNegocio = async (req, res) => {
 
 const updateNegocio = async (req, res) => {
     try{
+        if(req.user._id != req.params.negocioId) return res.status(401).send('Access Denied');
+
         const direccion = new Direccion({
             latitud: req.body.latitud,
             longitud: req.body.longitud,
@@ -95,6 +97,8 @@ const updateNegocio = async (req, res) => {
 
 const postProducto = async (req, res) => {
     try{
+        if(req.user._id != req.params.negocioId) return res.status(401).send('Access Denied');
+
         const producto = new Producto({
             nombre: req.body.nombre,
             descripcion: req.body.descripcion,
