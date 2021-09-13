@@ -8,6 +8,7 @@ dotenv.config({path: __dirname + '/.env.local'});
 const negociosRoute = require("./routes/negocios");
 const productosRoute = require("./routes/productos");
 const usuariosRoute = require('./routes/usuarios');
+const clientesRoute = require('./routes/clientes');
 
 //INICIALIZACIONES-------------------------------------------------
 const app = express();
@@ -29,6 +30,7 @@ app.set('json spaces', 2);
 app.use('/negocios', negociosRoute);
 app.use('/productos', productosRoute);
 app.use('/usuarios', usuariosRoute);
+app.use('/clientes', clientesRoute);
 
 //STATIC-FILES-----------------------------------------
 
