@@ -1,6 +1,7 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const Usuario = require('../models/Usuario');
+const Negocio = require('../models/Negocio');
 
 const login = async (req, res) => {
     try{
@@ -19,8 +20,25 @@ const login = async (req, res) => {
         })
     }
     catch(err){
-        res.status(500).send(err);
+        res.status(400).send(err);
     } 
 }
 
-module.exports = { login };
+const getUsuario = async (req, res) => {
+    try{
+        const user = await Usuario.findById(req.params.usuarioId);
+        if(user.role == 'NEGOCIO'){
+            const negocio = await Negocio.find({
+                usuario: user._id
+            }).populate('usuario');
+            res.json(negocio);
+        } else{
+            res.json(user);
+        }
+        res.end();
+    } catch(err){
+        res.status(400).send(err);
+    }
+}
+
+module.exports = { login, getUsuario };
