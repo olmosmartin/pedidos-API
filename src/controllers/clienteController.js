@@ -5,7 +5,7 @@ const bcrypt = require('bcryptjs');
 
 const getCliente = async (req, res) => {
     try{
-        const clientes = await Cliente.findById(req.params.clienteId).populate('usuario');
+        const clientes = await Cliente.findById(req.params.clienteId).populate('usuario').populate('pedidos');
         res.json(clientes);
         res.end();
     } catch(err){
@@ -15,7 +15,7 @@ const getCliente = async (req, res) => {
 
 const getAllClientes = async (req, res) => {
     try{
-        const clientes = await Cliente.find().populate('usuario');
+        const clientes = await Cliente.find().populate('usuario').populate('pedidos');
         res.json(clientes);
         res.end();
     } catch(err) {
