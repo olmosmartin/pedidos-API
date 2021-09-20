@@ -19,7 +19,7 @@ const getPedido = async (req, res) => {
 const postPedido = async (req, res) => {
     try{
         const cliente = await Cliente.find({
-            usuario: req.body.cliente
+            usuario: req.user._id
         });
         if(!cliente) return res.status(400).send('El cliente solicitado no fue encontrado');
 
