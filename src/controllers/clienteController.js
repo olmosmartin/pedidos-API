@@ -28,7 +28,7 @@ const postCliente = async (req, res) => {
         //Toda esta parte se repite en negocio quizas habria que unificarlo en un middleware u otra cosa.
         const emailExists = await Usuario.findOne({ email: req.body.email });
         if(emailExists) return res.status(400).send('El email ingresado ya existe');
-        console.log(req.body);
+        
         const salt = await bcrypt.genSalt(12);
         const hashedPassword = await bcrypt.hash(req.body.password, salt);
 

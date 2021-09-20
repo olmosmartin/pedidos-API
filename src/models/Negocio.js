@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const ProductoSchema = require('./Producto').schema;
 const DireccionSchema = require('./Direccion').schema;
-const UsuarioSchema = require('./Usuario').schema;
+const PedidoSchema = require('./Pedido').schema;
 
 const NegocioSchema = mongoose.Schema({
     usuario: {
@@ -17,7 +17,11 @@ const NegocioSchema = mongoose.Schema({
         type: DireccionSchema,
         required: true
     },
-    productos: [ProductoSchema]
+    productos: [ProductoSchema],
+    pedidos: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Pedido'
+    }]
 });
 
 module.exports = mongoose.model('Negocio', NegocioSchema);

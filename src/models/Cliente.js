@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const UsuarioSchema = require('./Usuario').schema;
 const DireccionSchema = require('./Direccion').schema;
+const PedidoSchema = require('./Pedido').schema;
 
 const ClienteSchema = mongoose.Schema({
     usuario: {
@@ -12,12 +13,10 @@ const ClienteSchema = mongoose.Schema({
         type: DireccionSchema,
         required: true
     },
-    pedido_activo: {
-        type: String
-    },
-    historial_pedidos: {
-        type: String
-    }
+    pedidos: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Pedido'
+    }]
 });
 
 module.exports = mongoose.model('Cliente', ClienteSchema);

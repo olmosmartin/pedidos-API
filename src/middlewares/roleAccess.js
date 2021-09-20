@@ -17,8 +17,6 @@ const authorize = (roles) => (req, res, next) => {
         roles.forEach(role => {
             allowed = req.user.role === role
         });
-
-        console.log(req.user);
         
         if(allowed){
             return next();

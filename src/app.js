@@ -9,6 +9,8 @@ const negociosRoute = require("./routes/negocios");
 const productosRoute = require("./routes/productos");
 const usuariosRoute = require('./routes/usuarios');
 const clientesRoute = require('./routes/clientes');
+const repartidoresRoute = require('./routes/repartidores');
+const pedidosRoute = require('./routes/pedidos');
 
 //INICIALIZACIONES-------------------------------------------------
 const app = express();
@@ -31,8 +33,8 @@ app.use('/negocios', negociosRoute);
 app.use('/productos', productosRoute);
 app.use('/usuarios', usuariosRoute);
 app.use('/clientes', clientesRoute);
-
-//STATIC-FILES-----------------------------------------
+app.use('/repartidores', repartidoresRoute);
+app.use('/pedidos', pedidosRoute);
 
 //DB-CONNECTION----------------------------------------
 try {
