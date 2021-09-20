@@ -18,7 +18,7 @@ const getPedido = async (req, res) => {
 
 const postPedido = async (req, res) => {
     try{
-        const cliente = await Cliente.find({
+        const cliente = await Cliente.findOne({
             usuario: req.user._id
         });
         if(!cliente) return res.status(400).send('El cliente solicitado no fue encontrado');
@@ -45,7 +45,7 @@ const postPedido = async (req, res) => {
         });
 
         const pedido = new Pedido({
-            cliente: req.body.cliente,
+            cliente: cliente._id,
             negocio: req.body.negocio,
             productos: listaProductos,
             total: total,
@@ -78,10 +78,10 @@ const acceptPedido = async (req, res) => {
 
         if(pedido.estado !== 'PENDIENTE') return res.status(400).send('No se puede aceptar el pedido en su estado actual');
         
-        const negocios = await Negocio.find({
+        const negocio = await Negocio.findOne({
             usuario: req.user._id
         });
-        if(!negocios[0]._id.equals(pedido.negocio)) return res.status(400).send('No tiene el permiso para realizar esta accion');
+        if(!negocio._id.equals(pedido.negocio)) return res.status(400).send('No tiene el permiso para realizar esta accion');
 
         const updatedPedido = await Pedido.updateOne(
             { _id: req.params.pedidoId },
@@ -101,10 +101,10 @@ const rejectPedido = async (req, res) => {
 
         if(pedido.estado !== 'PENDIENTE') return res.status(400).send('No se puede rechazar el pedido en su estado actual');
         
-        const negocios = await Negocio.find({
+        const negocio = await Negocio.findOne({
             usuario: req.user._id
         });
-        if(!negocios[0]._id.equals(pedido.negocio)) return res.status(400).send('No tiene el permiso para realizar esta accion');
+        if(!negocio._id.equals(pedido.negocio)) return res.status(400).send('No tiene el permiso para realizar esta accion');
 
         const updatedPedido = await Pedido.updateOne(
             { _id: req.params.pedidoId },
