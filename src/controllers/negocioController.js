@@ -109,7 +109,7 @@ const postProducto = async (req, res) => {
         });
 
         const updatedNegocio = await Negocio.updateOne(
-            { usuario: req.params.negocioId },
+            { _id: req.params.negocioId },
             { $push: {productos: producto} }
         );
         res.json(updatedNegocio);
