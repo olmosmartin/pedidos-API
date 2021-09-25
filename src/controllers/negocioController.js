@@ -96,34 +96,9 @@ const updateNegocio = async (req, res) => {
     }
 }
 
-const postProducto = async (req, res) => {
-    try{
-        const negocio = await Negocio.findOne({ usuario: req.user._id });
-        if(negocio._id != req.params.negocioId) return res.status(401).send('Access Denied');
-
-        const producto = new Producto({
-            nombre: req.body.nombre,
-            descripcion: req.body.descripcion,
-            imagen: 'data:' + req.file.mimetype + ';base64,'+ req.file.buffer.toString("base64"),
-            precio: req.body.precio
-        });
-
-        const updatedNegocio = await Negocio.updateOne(
-            { _id: req.params.negocioId },
-            { $push: {productos: producto} }
-        );
-        res.json(updatedNegocio);
-        res.end();
-    } catch(err) {
-        console.log(err);
-        res.status(400).send(err);
-    }
-}
-
 module.exports = {
     getNegocio, 
     getAllNegocios,
     postNegocio,
-    updateNegocio,
-    postProducto
+    updateNegocio
 }

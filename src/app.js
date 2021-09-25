@@ -6,7 +6,6 @@ const dotenv = require('dotenv');
 dotenv.config({path: __dirname + '/.env.local'});
 
 const negociosRoute = require("./routes/negocios");
-const productosRoute = require("./routes/productos");
 const usuariosRoute = require('./routes/usuarios');
 const clientesRoute = require('./routes/clientes');
 const repartidoresRoute = require('./routes/repartidores');
@@ -30,7 +29,6 @@ app.set('json spaces', 2);
 //ROUTES-----------------------------------------------
 //app.use(require('./routes/videos.route'));
 app.use('/negocios', negociosRoute);
-app.use('/productos', productosRoute);
 app.use('/usuarios', usuariosRoute);
 app.use('/clientes', clientesRoute);
 app.use('/repartidores', repartidoresRoute);
