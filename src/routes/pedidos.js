@@ -4,8 +4,14 @@ const pedidoController = require('../controllers/pedidoController');
 const authorize = require('../middlewares/roleAccess');
 
 router.get('/:pedidoId', pedidoController.getPedido);
+router.get('/', pedidoController.getAllPedidos);
 router.post('/', authorize(['CLIENTE']), pedidoController.postPedido);
-router.put('/:pedidoId/aceptar', authorize(['NEGOCIO']), pedidoController.acceptPedido);
-router.put('/:pedidoId/rechazar', authorize(['NEGOCIO']), pedidoController.rejectPedido);
+
+// Cambio de estado
+router.put('/:pedidoId/aceptar', authorize(['NEGOCIO']), pedidoController.aceptarPedido);
+router.put('/:pedidoId/rechazar', authorize(['NEGOCIO']), pedidoController.rechazarPedido);
+router.put('/:pedidoId/listo', authorize(['NEGOCIO']), pedidoController.listoPedido);
+router.put('/:pedidoId/encaminar', authorize(['REPARTIDOR']), pedidoController.encaminarPedido);
+router.put('/:pedidoId/finalizar', authorize(['REPARTIDOR']), pedidoController.finalizarPedido);
 
 module.exports = router;

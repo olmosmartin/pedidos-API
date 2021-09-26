@@ -12,6 +12,17 @@ const getRepartidor = async (req, res) => {
     }
 }
 
+const getAllRepartidor = async (req, res) => {
+    try{
+        const repartidores = await Repartidor.find().populate('usuario');
+        res.json(respartidores);
+        res.end();
+    } catch(err){
+        console.error(err);
+        res.status(400).send(err);
+    }
+}
+
 const postRepartidor = async (req, res) => {
     try{
         const emailExists = await Usuario.findOne({ email: req.body.email });
@@ -46,6 +57,7 @@ const postRepartidor = async (req, res) => {
 
 module.exports = {
     getRepartidor,
+    getAllRepartidor,
     postRepartidor
 }
 

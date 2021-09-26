@@ -1,6 +1,7 @@
 const Pedido = require('../models/Pedido');
 const Cliente = require('../models/Cliente');
 const Negocio = require('../models/Negocio');
+const Repartidor = require('../models/Repartidor');
 
 const getPedido = async (req, res) => {
     try{
@@ -12,6 +13,31 @@ const getPedido = async (req, res) => {
         res.json(pedidos);
         res.end();
     } catch(err) {
+        res.status(400).send(err);
+    }
+}
+
+const getAllPedidos = async (req, res) => {
+    try{
+        console.log(req.query.ciudad);
+
+        const pedidos = await Pedido.find({
+            ...req.query.estado ? { estado: req.query.estado } : {}
+        })
+        .populate('cliente')
+        .populate({
+            path: 'negocio',
+            match: { 
+                ...req.query.ciudad ? { 'direccion.ciudad': req.query.ciudad } : {}
+            }
+        })
+        .populate('repartidor');
+        const pedidosFiltrados = pedidos.filter((pedido) => { return pedido.negocio });
+
+        res.json(pedidosFiltrados);
+        res.end();
+    } catch(err){
+        console.error(err);
         res.status(400).send(err);
     }
 }
@@ -71,17 +97,18 @@ const postPedido = async (req, res) => {
     }
 }
 
-const acceptPedido = async (req, res) => {
+const aceptarPedido = async (req, res) => {
     try{
         const pedido = await Pedido.findById(req.params.pedidoId);
-        if(!pedido) return res.status(400).send('El pedido solicitado no pudo ser encontrado');
+        if(!pedido) 
+            return res.status(400).send('El pedido solicitado no pudo ser encontrado');
 
-        if(pedido.estado !== 'PENDIENTE') return res.status(400).send('No se puede aceptar el pedido en su estado actual');
+        if(pedido.estado !== 'PENDIENTE') 
+            return res.status(400).send('No se puede aceptar el pedido en su estado actual');
         
-        const negocio = await Negocio.findOne({
-            usuario: req.user._id
-        });
-        if(!negocio._id.equals(pedido.negocio)) return res.status(400).send('No tiene el permiso para realizar esta accion');
+        const negocio = await Negocio.findOne({ usuario: req.user._id });
+        if(!negocio._id.equals(pedido.negocio)) 
+            return res.status(400).send('No tiene el permiso para realizar esta accion');
 
         const updatedPedido = await Pedido.updateOne(
             { _id: req.params.pedidoId },
@@ -94,17 +121,18 @@ const acceptPedido = async (req, res) => {
     }
 }
 
-const rejectPedido = async (req, res) => {
+const rechazarPedido = async (req, res) => {
     try{
         const pedido = await Pedido.findById(req.params.pedidoId);
-        if(!pedido) return res.status(400).send('El pedido solicitado no pudo ser encontrado');
+        if(!pedido) 
+            return res.status(400).send('El pedido solicitado no pudo ser encontrado');
 
-        if(pedido.estado !== 'PENDIENTE') return res.status(400).send('No se puede rechazar el pedido en su estado actual');
+        if(pedido.estado !== 'PENDIENTE') 
+            return res.status(400).send('No se puede rechazar el pedido en su estado actual');
         
-        const negocio = await Negocio.findOne({
-            usuario: req.user._id
-        });
-        if(!negocio._id.equals(pedido.negocio)) return res.status(400).send('No tiene el permiso para realizar esta accion');
+        const negocio = await Negocio.findOne({ usuario: req.user._id });
+        if(!negocio._id.equals(pedido.negocio)) 
+            return res.status(400).send('No tiene el permiso para realizar esta accion');
 
         const updatedPedido = await Pedido.updateOne(
             { _id: req.params.pedidoId },
@@ -117,9 +145,96 @@ const rejectPedido = async (req, res) => {
     }
 }
 
+const listoPedido = async (req, res) => {
+    try{
+        const pedido = await Pedido.findById(req.params.pedidoId);
+        if(!pedido) 
+            return res.status(400).send('El pedido solicitado no pudo ser encontrado');
+
+        if(pedido.estado !== 'PREPARANDO') 
+            return res.status(400).send('No se puede marcar listo el pedido en su estado actual');
+        
+        const negocio = await Negocio.findOne({ usuario: req.user._id });
+        if(!negocio._id.equals(pedido.negocio)) 
+            return res.status(400).send('No tiene el permiso para realizar esta accion');
+
+        const updatedPedido = await Pedido.updateOne(
+            { _id: req.params.pedidoId },
+            { $set: {estado: 'LISTO'} }
+        );
+        res.json(updatedPedido);
+        res.end();
+    } catch(err){
+        console.error(err);
+        res.status(400).send(err);
+    }
+}
+
+const encaminarPedido = async (req, res) => {
+    try{
+        const pedido = await Pedido.findById(req.params.pedidoId);
+        if(!pedido) 
+            return res.status(400).send('El pedido solicitado no pudo ser encontrado');
+
+        if(pedido.estado !== 'LISTO') 
+            return res.status(400).send('No se puede marcar en camino el pedido en su estado actual');
+        
+        const repartidor = await Repartidor.findOne({ usuario: req.user._id });
+        if(!repartidor)
+            return res.status(400).send('No tiene el permiso para realizar esta accion');
+        // Agrego la referencia del pedido al repartidor
+        await Repartidor.updateOne(
+            { _id: repartidor._id },
+            { $push: {pedidos: pedido._id}}
+        )
+    
+        const updatedPedido = await Pedido.updateOne(
+            { _id: req.params.pedidoId },
+            { $set: {
+                repartidor: repartidor._id,
+                estado: 'EN_CAMINO'
+            } }
+        );
+        res.json(updatedPedido);
+        res.end();
+    } catch(err){
+        console.error(err);
+        res.status(400).send(err);
+    }
+}
+
+const finalizarPedido = async (req, res) => {
+    try{
+        const pedido = await Pedido.findById(req.params.pedidoId);
+        if(!pedido) 
+            return res.status(400).send('El pedido solicitado no pudo ser encontrado');
+
+        if(pedido.estado !== 'EN_CAMINO') 
+            return res.status(400).send('No se puede finalizar el pedido en su estado actual');
+        
+        const repartidor = await Repartidor.findOne({ usuario: req.user._id });
+        if(!repartidor._id.equals(pedido.repartidor))
+            return res.status(400).send('No tiene el permiso para realizar esta accion');
+
+        const updatedPedido = await Pedido.updateOne(
+            { _id: req.params.pedidoId },
+            { $set: { estado: 'FINALIZADO' } }
+        );
+        res.json(updatedPedido);
+        res.end();
+    } catch(err){
+        console.error(err);
+        res.status(400).send(err);
+    }
+}
+
 module.exports = {
     getPedido,
+    getAllPedidos,
     postPedido,
-    acceptPedido,
-    rejectPedido
+    aceptarPedido,
+    rechazarPedido,
+    listoPedido,
+    encaminarPedido,
+    finalizarPedido
 }
