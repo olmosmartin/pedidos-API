@@ -19,8 +19,6 @@ const getPedido = async (req, res) => {
 
 const getAllPedidos = async (req, res) => {
     try{
-        console.log(req.query.ciudad);
-
         const pedidos = await Pedido.find({
             ...req.query.estado ? { estado: req.query.estado } : {}
         })

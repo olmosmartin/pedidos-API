@@ -14,11 +14,9 @@ const ProductoSchema = mongoose.Schema({
     precio: {
         type: Number,
         required: true
-    },
-    date: {
-        type: Date,
-        default: Date.now
     }
+}, {
+    timestamps: true
 });
 
 module.exports = mongoose.model('Producto', ProductoSchema);
