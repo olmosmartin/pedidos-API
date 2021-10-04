@@ -55,13 +55,18 @@ const updateProducto = async (req, res) => {
                 _id: req.params.negocioId, 
                 'productos._id': req.params.productoId 
             }, 
-            { $set: { 
+            {   $set: { 
                     'productos.$.nombre': req.body.nombre,
                     'productos.$.descripcion': req.body.descripcion,
                     'productos.$.imagen': 'data:' + req.file.mimetype + ';base64,'+ req.file.buffer.toString("base64"),
-                    'productos.$.precio': req.body.precio
-                } 
-            }
+                    'productos.$.precio': req.body.precio,
+                    ...req.body.descuento ? {'productos.$.descuento': req.body.descuento} : {}
+                },
+                $unset: {
+                    ...req.body.descuento ? {} : {'productos.$.descuento': 1}
+                }
+            },
+            { runValidators: true }
         );
 
         res.json(updatedNegocio);
