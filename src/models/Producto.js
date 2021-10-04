@@ -6,14 +6,21 @@ const ProductoSchema = mongoose.Schema({
         required: true
     },
     descripcion: {
-        type: String
+        type: String,
+        required: true
     },
     imagen: {
-        type: String
+        type: String,
+        required: true
     },
     precio: {
         type: Number,
         required: true
+    },
+    descuento: {
+        type: Number,
+        min: 1,
+        max: 100
     }
 }, {
     timestamps: true

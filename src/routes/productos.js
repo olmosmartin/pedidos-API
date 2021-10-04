@@ -7,6 +7,7 @@ const authorize = require('../middlewares/roleAccess');
 router.get('/', productoController.getAllProductos);
 router.get('/:productoId', productoController.getProducto);
 router.post('/', authorize(['NEGOCIO']), multerUpload, productoController.postProducto);
+router.put('/:productoId', authorize(['NEGOCIO']), multerUpload, productoController.updateProducto);
 router.delete('/:productoId', authorize(['NEGOCIO']), productoController.deleteProducto);
 
 module.exports = router;
