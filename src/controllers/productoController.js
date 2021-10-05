@@ -3,8 +3,16 @@ const Negocio = require('../models/Negocio');
 
 const getProducto = async (req, res) => {
     try{
-        const productos = await Producto.findById(req.params.productoId);
-        res.json(productos);
+        const query = await Negocio.find({
+                _id: req.params.negocioId,
+                'productos._id': req.params.productoId
+            }, { 
+                _id:0, 
+                "productos.$":1
+            });
+
+        const producto = query[0].productos[0];
+        res.json(producto);
         res.end();
     } catch(err) {
         res.status(400).send(err);
