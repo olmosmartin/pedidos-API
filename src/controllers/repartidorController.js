@@ -4,7 +4,7 @@ const bcrypt = require('bcryptjs');
 
 const getRepartidor = async (req, res) => {
     try{
-        const repartidores = await Repartidor.findById(req.params.repartidorId).populate('usuario');
+        const repartidores = await Repartidor.findById(req.params.repartidorId).populate('usuario').populate('pedidos');
         res.json(repartidores);
         res.end();
     } catch(err){
@@ -14,8 +14,8 @@ const getRepartidor = async (req, res) => {
 
 const getAllRepartidor = async (req, res) => {
     try{
-        const repartidores = await Repartidor.find().populate('usuario');
-        res.json(respartidores);
+        const repartidores = await Repartidor.find().populate('usuario').populate('pedidos');
+        res.json(repartidores);
         res.end();
     } catch(err){
         console.error(err);
