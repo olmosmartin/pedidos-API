@@ -66,7 +66,7 @@ const updateProducto = async (req, res) => {
             {   $set: { 
                     'productos.$.nombre': req.body.nombre,
                     'productos.$.descripcion': req.body.descripcion,
-                    'productos.$.imagen': 'data:' + req.file.mimetype + ';base64,'+ req.file.buffer.toString("base64"),
+                    ...req.file ? {'productos.$.imagen': 'data:' + req.file.mimetype + ';base64,'+ req.file.buffer.toString("base64")} : {},
                     'productos.$.precio': req.body.precio,
                     ...req.body.descuento ? {'productos.$.descuento': req.body.descuento} : {}
                 },
