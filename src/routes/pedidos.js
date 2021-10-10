@@ -13,5 +13,6 @@ router.put('/:pedidoId/rechazar', authorize(['NEGOCIO']), pedidoController.recha
 router.put('/:pedidoId/listo', authorize(['NEGOCIO']), pedidoController.listoPedido);
 router.put('/:pedidoId/encaminar', authorize(['REPARTIDOR']), pedidoController.encaminarPedido);
 router.put('/:pedidoId/finalizar', authorize(['REPARTIDOR']), pedidoController.finalizarPedido);
+router.post('/:pedidoId/puntuar', authorize(['CLIENTE']), pedidoController.puntuarPedido);
 
 module.exports = router;

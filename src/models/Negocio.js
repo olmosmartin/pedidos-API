@@ -21,7 +21,10 @@ const NegocioSchema = mongoose.Schema({
     pedidos: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Pedido'
-    }]
+    }],
+    puntuacionCount: Number,
+    puntuacionTotal: Number,
+    puntuacionAvg: Number
 });
 
 module.exports = mongoose.model('Negocio', NegocioSchema);

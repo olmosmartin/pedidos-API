@@ -226,6 +226,52 @@ const finalizarPedido = async (req, res) => {
     }
 }
 
+const puntuarPedido = async (req, res) => {
+    try{
+        const pedido = await Pedido.findById(req.params.pedidoId).populate('negocio');
+        if(!pedido) 
+            return res.status(404).send('El pedido solicitado no pudo ser encontrado');
+
+        if(pedido.review.puntuacion)
+            return res.status(400).send('El pedido ya fue puntuado, no puede hacerlo nuevamente');
+        
+        if(pedido.estado !== 'FINALIZADO') 
+            return res.status(400).send('No se puede puntuar un pedido no finalizado');
+
+        const cliente = await Cliente.findOne({ usuario: req.user._id });
+        if(!cliente._id.equals(pedido.cliente))
+            return res.status(403).send('No tiene el permiso para realizar esta accion');
+    
+        const updatedPedido = await Pedido.updateOne(
+            { _id: req.params.pedidoId },
+            { $set: { 
+                review: {
+                    puntuacion: req.body.puntuacion,
+                    ...req.body.comentario ? { comentario: req.body.comentario } : {}
+                }
+            } },
+            { runValidators: true }
+        );
+        await Negocio.updateOne(
+            { _id: pedido.negocio._id },
+            { 
+                $inc: { 
+                    puntuacionCount: 1,
+                    puntuacionTotal: req.body.puntuacion
+                },
+                $set: {
+                    puntuacionAvg: ((pedido.negocio.puntuacionTotal || 0) + req.body.puntuacion)/((pedido.negocio.puntuacionCount || 0) + 1)
+                }
+            },
+        );
+        res.json(updatedPedido);
+        res.end();
+    } catch(err){
+        console.error(err);
+        res.status(400).send(err);
+    }
+}
+
 module.exports = {
     getPedido,
     getAllPedidos,
@@ -234,5 +280,6 @@ module.exports = {
     rechazarPedido,
     listoPedido,
     encaminarPedido,
-    finalizarPedido
+    finalizarPedido,
+    puntuarPedido
 }

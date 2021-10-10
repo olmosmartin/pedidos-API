@@ -32,6 +32,16 @@ const PedidoSchema = mongoose.Schema({
         required: true,
         // En pedidosYa no se puede cancelar el pedido una vez que lo agarro el repartidor
         enum: ['PENDIENTE', 'RECHAZADO', 'PREPARANDO', 'LISTO', 'CANCELADO', 'EN_CAMINO', 'FINALIZADO']
+    },
+    review: {
+        puntuacion: {
+            type: Number,
+            min: 1,
+            max: 5
+        },
+        comentario: {
+            type: String
+        }
     }
 }, {
     timestamps: true
