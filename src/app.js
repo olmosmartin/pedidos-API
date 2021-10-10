@@ -2,6 +2,8 @@ const express = require('express');
 const morgan = require('morgan');
 const cors = require("cors");
 const mongoose = require("mongoose");
+const swaggerUI = require('swagger-ui-express');
+const swaggerDocument = require('./swagger.json')
 const dotenv = require('dotenv');
 dotenv.config({path: __dirname + '/.env.local'});
 
@@ -28,11 +30,14 @@ app.set('json spaces', 2);
 
 //ROUTES-----------------------------------------------
 //app.use(require('./routes/videos.route'));
+app.use('/', swaggerUI.serve);
 app.use('/negocios', negociosRoute);
 app.use('/usuarios', usuariosRoute);
 app.use('/clientes', clientesRoute);
 app.use('/repartidores', repartidoresRoute);
 app.use('/pedidos', pedidosRoute);
+
+app.get('/', swaggerUI.setup(swaggerDocument));
 
 //DB-CONNECTION----------------------------------------
 try {

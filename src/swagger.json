@@ -1,0 +1,106 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Pedilo Ya API",
+    "description": "La API para realizar pedidos y gestionarlos",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8080",
+      "description": "Local server"
+    }
+  ],
+  "paths": {
+    "/negocios/{negocioId}": {
+      "get": {
+        "tags": [
+          "Get negocio especifico"
+        ],
+        "summary": "Devuelve un negocio por ID",
+        "parameters": [
+          {
+            "name": "negocioId",
+            "in": "path",
+            "required": true,
+            "description": "ID del negocio que se quiere traer",
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Un negocio con el ID solicitado"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Direccion": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "integer",
+            "description": "El ID autogenerado por mongoDB"
+          },
+          "latitud": {
+            "type": "integer",
+            "description": "La latitud de origen"
+          },
+          "longitud": {
+            "type": "integer",
+            "description": "La longitud de origen"
+          },
+          "ciudad": {
+            "type": "string",
+            "description": "La ciudad de origen"
+          },
+          "calle": {
+            "type": "string",
+            "description": "La calle de origen"
+          },
+          "numero": {
+            "type": "integer",
+            "description": "El numero de la calle"
+          }
+        }
+      },
+      "Usuario": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "integer",
+            "description": "El ID autogenerado por mongoDB"
+          },
+          "nombre": {
+            "type": "string",
+            "description": "El nombre de usuario"
+          },
+          "email": {
+            "type": "string",
+            "description": "El email del usuario"
+          },
+          "password": {
+            "type": "string",
+            "description": "La contraseña del usuario"
+          },
+          "telefono": {
+            "type": "integer",
+            "description": "El telefono de contacto"
+          },
+          "role": {
+            "type": "string",
+            "description": "El rol del usuario (CLIENTE, NEGOCIO, REPARTIDOR, ADMIN)"
+          }
+        }
+      },
+      "Negocio": {
+        "type": "object"
+      }
+    }
+  }
+}
