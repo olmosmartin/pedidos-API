@@ -1,11 +1,9 @@
 const bcrypt = require('bcryptjs');
-const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
 const Usuario = require('../models/Usuario');
 const Negocio = require('../models/Negocio');
 const Cliente = require('../models/Cliente');
 const Repartidor = require('../models/Repartidor');
-const Token = require('../models/Token');
 const sendEmail = require('../middlewares/sendEmail');
 
 const login = async (req, res) => {
