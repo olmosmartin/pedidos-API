@@ -61,7 +61,7 @@ const passwordReset = async (req, res) => {
             return res.status(400).send('No existe un usuario con ese email');
         }
 
-        const newToken = jwt.sign({ _id: user._id, role: user.role }, process.env.TOKEN_SECRET, { expiresIn: '2m' });
+        const newToken = jwt.sign({ _id: user._id, role: user.role }, process.env.TOKEN_SECRET, { expiresIn: '1h' });
 
         const link = `grupocpediloya.herokuapp.com/passwordReset?token=${newToken}`;
         const email = await sendEmail(user.email, 'Password Reset', { name: user.nombre, link: link }, 'templates/passwordReset.hbs');
