@@ -13,12 +13,8 @@ const authorize = (roles) => (req, res, next) => {
         }
 
         //Chequeo si el rol esta en la lista de permitidos
-        var allowed = false;
-        roles.forEach(role => {
-            allowed = req.user.role === role
-        });
-        
-        if(allowed){
+        const allowed = roles.indexOf(req.user.role);
+        if(allowed > -1){
             return next();
         }
         else{
