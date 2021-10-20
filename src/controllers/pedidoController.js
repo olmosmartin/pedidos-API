@@ -73,7 +73,8 @@ const postPedido = async (req, res) => {
             negocio: req.body.negocio,
             productos: listaProductos,
             total: total,
-            estado: 'PENDIENTE'
+            estado: 'PENDIENTE',
+            medio_de_pago: req.body.medio_de_pago
         });
 
 

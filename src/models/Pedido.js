@@ -42,6 +42,10 @@ const PedidoSchema = mongoose.Schema({
         comentario: {
             type: String
         }
+    }, 
+    medio_de_pago: {
+        type: String,
+        required: true
     }
 }, {
     timestamps: true
