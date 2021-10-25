@@ -253,6 +253,8 @@ const puntuarPedido = async (req, res) => {
             } },
             { runValidators: true }
         );
+        const total = pedido.negocio.puntuacionTotal || 0;
+        const count = pedido.negocio.puntuacionCount || 0;
         await Negocio.updateOne(
             { _id: pedido.negocio._id },
             { 
@@ -261,7 +263,7 @@ const puntuarPedido = async (req, res) => {
                     puntuacionTotal: req.body.puntuacion
                 },
                 $set: {
-                    puntuacionAvg: ((pedido.negocio.puntuacionTotal || 0) + req.body.puntuacion)/((pedido.negocio.puntuacionCount || 0) + 1)
+                    puntuacionAvg: (total + req.body.puntuacion)/(count + 1)
                 }
             },
         );
