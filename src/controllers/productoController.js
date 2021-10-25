@@ -38,7 +38,8 @@ const postProducto = async (req, res) => {
             nombre: req.body.nombre,
             descripcion: req.body.descripcion,
             imagen: 'data:' + req.file.mimetype + ';base64,'+ req.file.buffer.toString("base64"),
-            precio: req.body.precio
+            precio: req.body.precio,
+            ...req.body.tipo_comida ? { tipo_comida: req.body.tipo_comida } : {}
         });
 
         const updatedNegocio = await Negocio.updateOne(
@@ -68,7 +69,8 @@ const updateProducto = async (req, res) => {
                     'productos.$.descripcion': req.body.descripcion,
                     ...req.file ? {'productos.$.imagen': 'data:' + req.file.mimetype + ';base64,'+ req.file.buffer.toString("base64")} : {},
                     'productos.$.precio': req.body.precio,
-                    ...req.body.descuento ? {'productos.$.descuento': req.body.descuento} : {}
+                    ...req.body.descuento ? {'productos.$.descuento': req.body.descuento} : {},
+                    ...req.body.tipo_comida ? { 'productos.$.tipo_comida': req.body.tipo_comida } : {}
                 },
                 $unset: {
                     ...req.body.descuento ? {} : {'productos.$.descuento': 1}
