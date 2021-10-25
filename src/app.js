@@ -10,7 +10,6 @@ const usuariosRoute = require('./routes/usuarios');
 const clientesRoute = require('./routes/clientes');
 const repartidoresRoute = require('./routes/repartidores');
 const pedidosRoute = require('./routes/pedidos');
-const tipoComidasRoute = require('./routes/tipoComidas');
 
 //INICIALIZACIONES-------------------------------------------------
 const app = express();
@@ -34,7 +33,6 @@ app.use('/usuarios', usuariosRoute);
 app.use('/clientes', clientesRoute);
 app.use('/repartidores', repartidoresRoute);
 app.use('/pedidos', pedidosRoute);
-app.use('/tipo_comidas', tipoComidasRoute);
 
 //DB-CONNECTION----------------------------------------
 try {

@@ -6,7 +6,7 @@ const bcrypt = require('bcryptjs');
 
 const getNegocio = async (req, res) => {
     try{
-        const negocios = await Negocio.findById(req.params.negocioId).populate('usuario').populate('pedidos');
+        const negocios = await Negocio.findById(req.params.negocioId).populate('usuario').populate('pedidos')
         res.json(negocios);
         res.end();
     } catch(err) {
@@ -17,8 +17,10 @@ const getNegocio = async (req, res) => {
 const getAllNegocios = async (req, res) => {
     try{
         const negocios = await Negocio.find({
-            ...req.query.ciudad ? { 'direccion.ciudad': req.query.ciudad } : {}
-        }).populate('usuario');
+            ...req.query.ciudad ? { 'direccion.ciudad': req.query.ciudad } : {},
+            ...req.query.tipo_comida ? { 'productos.tipo_comida': req.query.tipo_comida } : {}
+        }).populate('usuario').populate('pedidos');
+         
         res.json(negocios);
         res.end();
     } catch(err) {

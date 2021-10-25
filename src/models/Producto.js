@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const TipoComidaSchema = require('./TipoComida');
 
 const ProductoSchema = mongoose.Schema({
     nombre: {
@@ -24,8 +23,7 @@ const ProductoSchema = mongoose.Schema({
         max: 100
     },
     tipo_comida: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'TipoComida'
+        type: String
     }
 }, {
     timestamps: true
