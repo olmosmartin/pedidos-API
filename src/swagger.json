@@ -7,8 +7,12 @@
   },
   "servers": [
     {
+      "url": "https://pedidosya-api.herokuapp.com/",
+      "description": "Servidor de Desarrollo"
+    },
+    {
       "url": "http://localhost:8080",
-      "description": "Local server"
+      "description": "Servidor local"
     }
   ],
   "paths": {
