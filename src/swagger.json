@@ -2,22 +2,153 @@
   "openapi": "3.0.3",
   "info": {
     "title": "Pedilo Ya API",
-    "description": "La API para realizar pedidos y gestionarlos",
+    "description": "La API para realizar pedidos",
     "version": "1.0.0"
   },
   "servers": [
     {
+      "url": "http://https://pedidosya-api.herokuapp.com/",
+      "description": "Servidor de desarrollo"
+    },
+    {
       "url": "http://localhost:8080",
-      "description": "Local server"
+      "description": "Servidor local"
     }
   ],
   "paths": {
+    "/usuarios/login": {
+      "post": {
+        "tags": [
+          "Usuarios"
+        ],
+        "summary": "Devuelve el token de autorizacion",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "description": "Email del usuario"
+                  },
+                  "password": {
+                    "type": "string",
+                    "description": "Password del usuario"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Informacion del usuario",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "_id": {
+                      "type": "string",
+                      "description": "ID dependiendo del tipo de usuario"
+                    },
+                    "auth_token": {
+                      "type": "string",
+                      "description": "Token de autorizacion para el usuario"
+                    },
+                    "role": {
+                      "type": "string",
+                      "description": "Rol del usuario"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/negocios": {
+      "get": {
+        "tags": [
+          "Negocios"
+        ],
+        "summary": "Devuelve todos los negocios",
+        "parameters": [
+          {
+            "name": "ciudad",
+            "in": "query",
+            "required": false,
+            "description": "Permite filtrar la busqueda por ciudad",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Negocios buscados",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Negocio"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Negocios"
+        ],
+        "summary": "Registra un negocio",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/RegistroUsuario"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Devuelve el negocio creado"
+          }
+        }
+      }
+    },
     "/negocios/{negocioId}": {
       "get": {
         "tags": [
-          "Get negocio especifico"
+          "Negocios"
         ],
         "summary": "Devuelve un negocio por ID",
+        "parameters": [
+          {
+            "name": "negocioId",
+            "in": "path",
+            "required": true,
+            "description": "ID del negocio que se quiere traer",
+            "schema": {
+              "type": "string",
+              "minimum": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Un negocio con el ID solicitado"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Negocios"
+        ],
+        "summary": "Actualiza la informacion de un negocio",
         "parameters": [
           {
             "name": "negocioId",
@@ -28,11 +159,640 @@
               "type": "integer",
               "minimum": 1
             }
+          },
+          {
+            "name": "auth-token",
+            "in": "header",
+            "required": true,
+            "description": "Token de autorizacion",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateUsuario"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Devuelve el negocio actualizado"
+          }
+        }
+      }
+    },
+    "/negocios/{negocioId}/productos": {
+      "get": {
+        "tags": [
+          "Productos"
+        ],
+        "summary": "Devuelve los productos de un negocio",
+        "parameters": [
+          {
+            "name": "negocioId",
+            "in": "path",
+            "required": true,
+            "description": "El negocio que tiene los productos",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Productos del negocio",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Producto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Productos"
+        ],
+        "summary": "Agrega un producto al menu",
+        "parameters": [
+          {
+            "name": "negocioId",
+            "in": "path",
+            "required": true,
+            "description": "El negocio que tiene los productos",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Producto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Devuelve el producto agregado"
+          }
+        }
+      }
+    },
+    "/negocios/{negocioId}/productos/{productoId}": {
+      "get": {
+        "tags": [
+          "Productos"
+        ],
+        "summary": "Devuelve un producto por ID",
+        "parameters": [
+          {
+            "name": "negocioId",
+            "in": "path",
+            "required": true,
+            "description": "El negocio que tiene los productos",
+            "schema": {
+              "type": "string",
+              "minimum": 1
+            }
+          },
+          {
+            "name": "productoId",
+            "in": "path",
+            "required": true,
+            "description": "El ID del producto que se quiere traer",
+            "schema": {
+              "type": "string",
+              "minimum": 1
+            }
           }
         ],
         "responses": {
           "200": {
             "description": "Un negocio con el ID solicitado"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Productos"
+        ],
+        "summary": "Actualiza la informacion de un producto",
+        "parameters": [
+          {
+            "name": "negocioId",
+            "in": "path",
+            "required": true,
+            "description": "El negocio que tiene los productos",
+            "schema": {
+              "type": "string",
+              "minimum": 1
+            }
+          },
+          {
+            "name": "productoId",
+            "in": "path",
+            "required": true,
+            "description": "El ID del producto que se quiere traer",
+            "schema": {
+              "type": "string",
+              "minimum": 1
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Producto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Devuelve el negocio creado"
+          }
+        }
+      }
+    },
+    "/clientes": {
+      "get": {
+        "tags": [
+          "Clientes"
+        ],
+        "summary": "Devuelve todos los clientes",
+        "responses": {
+          "200": {
+            "description": "Todos los clientes",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Cliente"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Clientes"
+        ],
+        "summary": "Registra un cliente",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/RegistroUsuario"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Devuelve el cliente creado"
+          }
+        }
+      }
+    },
+    "/clientes/{clienteId}": {
+      "get": {
+        "tags": [
+          "Clientes"
+        ],
+        "summary": "Devuelve un cliente por ID",
+        "parameters": [
+          {
+            "name": "clienteId",
+            "in": "path",
+            "required": true,
+            "description": "ID del cliente que se quiere traer",
+            "schema": {
+              "type": "string",
+              "minimum": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Un cliente con el ID solicitado"
+          }
+        }
+      }
+    },
+    "/repartidores": {
+      "get": {
+        "tags": [
+          "Repartidores"
+        ],
+        "summary": "Devuelve todos los clientes",
+        "responses": {
+          "200": {
+            "description": "Todos los clientes",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Cliente"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Repartidores"
+        ],
+        "summary": "Registra un repartidor",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/RegistroUsuario"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Devuelve el repartidor creado"
+          }
+        }
+      }
+    },
+    "/repartidores/{repartidorId}": {
+      "get": {
+        "tags": [
+          "Repartidores"
+        ],
+        "summary": "Devuelve un repartidor por ID",
+        "parameters": [
+          {
+            "name": "repartidorId",
+            "in": "path",
+            "required": true,
+            "description": "ID del repartidor que se quiere traer",
+            "schema": {
+              "type": "string",
+              "minimum": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Un repartidor con el ID solicitado"
+          }
+        }
+      }
+    },
+    "/pedidos": {
+      "get": {
+        "tags": [
+          "Pedidos"
+        ],
+        "summary": "Busqueda de pedidos",
+        "parameters": [
+          {
+            "name": "estado",
+            "in": "query",
+            "required": false,
+            "description": "Estado del pedido por el que se quiere filtrar",
+            "schema": {
+              "type": "string",
+              "minimum": 1
+            }
+          },
+          {
+            "name": "ciudad",
+            "in": "query",
+            "required": false,
+            "description": "Ciudad del pedido por el que se quiere filtrar",
+            "schema": {
+              "type": "string",
+              "minimum": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Todos los pedidos buscados",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Pedido"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Pedidos"
+        ],
+        "summary": "Crea un pedido",
+        "parameters": [
+          {
+            "name": "auth-token",
+            "in": "header",
+            "required": true,
+            "description": "Token de autorizacion",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "negocio": {
+                    "type": "string",
+                    "description": "ID del negocio al que se le pide"
+                  },
+                  "productos": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "producto": {
+                          "type": "string",
+                          "description": "ID del producto elegido"
+                        },
+                        "cantidad": {
+                          "type": "number",
+                          "description": "Cantidad seleccionada del producto"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Devuelve el pedido creado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Pedido"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/pedidos/{pedidoId}": {
+      "get": {
+        "tags": [
+          "Pedidos"
+        ],
+        "summary": "Traer un pedido especifico",
+        "parameters": [
+          {
+            "name": "pedidoId",
+            "in": "path",
+            "required": true,
+            "description": "ID del pedido seleccionado",
+            "schema": {
+              "type": "string",
+              "minimum": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Todos los pedidos buscados",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Pedido"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/pedidos/{pedidoId}/aceptar": {
+      "put": {
+        "tags": [
+          "Pedidos"
+        ],
+        "summary": "Aceptar un pedido pendiente",
+        "parameters": [
+          {
+            "name": "pedidoId",
+            "in": "path",
+            "required": true,
+            "description": "ID del pedido seleccionado",
+            "schema": {
+              "type": "string",
+              "minimum": 1
+            }
+          },
+          {
+            "name": "auth-token",
+            "in": "header",
+            "required": true,
+            "description": "Token de autorizacion",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Devuelve el pedido con el estado actualizado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Pedido"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/pedidos/{pedidoId}/rechazar": {
+      "put": {
+        "tags": [
+          "Pedidos"
+        ],
+        "summary": "Rechazar un pedido pendiente",
+        "parameters": [
+          {
+            "name": "pedidoId",
+            "in": "path",
+            "required": true,
+            "description": "ID del pedido seleccionado",
+            "schema": {
+              "type": "string",
+              "minimum": 1
+            }
+          },
+          {
+            "name": "auth-token",
+            "in": "header",
+            "required": true,
+            "description": "Token de autorizacion",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Devuelve el pedido con el estado actualizado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Pedido"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/pedidos/{pedidoId}/listo": {
+      "put": {
+        "tags": [
+          "Pedidos"
+        ],
+        "summary": "Marcar para repartir un pedido preparado",
+        "parameters": [
+          {
+            "name": "pedidoId",
+            "in": "path",
+            "required": true,
+            "description": "ID del pedido seleccionado",
+            "schema": {
+              "type": "string",
+              "minimum": 1
+            }
+          },
+          {
+            "name": "auth-token",
+            "in": "header",
+            "required": true,
+            "description": "Token de autorizacion",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Devuelve el pedido con el estado actualizado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Pedido"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/pedidos/{pedidoId}/encaminar": {
+      "put": {
+        "tags": [
+          "Pedidos"
+        ],
+        "summary": "El repartidor marca el pedido en camino",
+        "parameters": [
+          {
+            "name": "pedidoId",
+            "in": "path",
+            "required": true,
+            "description": "ID del pedido seleccionado",
+            "schema": {
+              "type": "string",
+              "minimum": 1
+            }
+          },
+          {
+            "name": "auth-token",
+            "in": "header",
+            "required": true,
+            "description": "Token de autorizacion",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Devuelve el pedido con el estado actualizado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Pedido"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/pedidos/{pedidoId}/finalizar": {
+      "put": {
+        "tags": [
+          "Pedidos"
+        ],
+        "summary": "Marcar el pedido como terminado",
+        "parameters": [
+          {
+            "name": "pedidoId",
+            "in": "path",
+            "required": true,
+            "description": "ID del pedido seleccionado",
+            "schema": {
+              "type": "string",
+              "minimum": 1
+            }
+          },
+          {
+            "name": "auth-token",
+            "in": "header",
+            "required": true,
+            "description": "Token de autorizacion",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Devuelve el pedido con el estado actualizado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Pedido"
+                }
+              }
+            }
           }
         }
       }
@@ -44,15 +804,15 @@
         "type": "object",
         "properties": {
           "_id": {
-            "type": "integer",
+            "type": "string",
             "description": "El ID autogenerado por mongoDB"
           },
           "latitud": {
-            "type": "integer",
+            "type": "number",
             "description": "La latitud de origen"
           },
           "longitud": {
-            "type": "integer",
+            "type": "number",
             "description": "La longitud de origen"
           },
           "ciudad": {
@@ -64,7 +824,7 @@
             "description": "La calle de origen"
           },
           "numero": {
-            "type": "integer",
+            "type": "number",
             "description": "El numero de la calle"
           }
         }
@@ -73,7 +833,7 @@
         "type": "object",
         "properties": {
           "_id": {
-            "type": "integer",
+            "type": "string",
             "description": "El ID autogenerado por mongoDB"
           },
           "nombre": {
@@ -89,17 +849,247 @@
             "description": "La contraseña del usuario"
           },
           "telefono": {
-            "type": "integer",
+            "type": "number",
             "description": "El telefono de contacto"
           },
           "role": {
             "type": "string",
-            "description": "El rol del usuario (CLIENTE, NEGOCIO, REPARTIDOR, ADMIN)"
+            "description": "El rol del usuario",
+            "enum": [
+              "CLIENTE",
+              "NEGOCIO",
+              "REPARTIDOR",
+              "ADMIN"
+            ]
+          }
+        }
+      },
+      "Producto": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "description": "El ID autogenerado por mongoDB"
+          },
+          "nombre": {
+            "type": "string",
+            "description": "Nombre del producto"
+          },
+          "descripcion": {
+            "type": "string",
+            "description": "Descripcion breve del producto"
+          },
+          "file": {
+            "type": "string",
+            "description": "String Base64 que representa la imagen"
+          },
+          "precio": {
+            "type": "number",
+            "description": "El precio total del producto"
+          },
+          "descuento": {
+            "type": "number",
+            "description": "Un porcentaje de descuento entre 1 y 100, es opcional"
           }
         }
       },
       "Negocio": {
-        "type": "object"
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "description": "El ID autogenerado por mongoDB"
+          },
+          "imagen": {
+            "type": "string",
+            "description": "String Base64 que representa la imagen"
+          },
+          "productos": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Producto"
+            }
+          },
+          "pedidos": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Pedido"
+            }
+          },
+          "usuario": {
+            "$ref": "#/components/schemas/Usuario"
+          },
+          "direccion": {
+            "$ref": "#/components/schemas/Direccion"
+          }
+        }
+      },
+      "Cliente": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "description": "El ID autogenerado por mongoDB"
+          },
+          "usuario": {
+            "$ref": "#/components/schemas/Usuario"
+          },
+          "direccion": {
+            "$ref": "#/components/schemas/Direccion"
+          },
+          "pedidos": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Pedido"
+            }
+          }
+        }
+      },
+      "Repartidor": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "description": "El ID autogenerado por mongoDB"
+          },
+          "usuario": {
+            "$ref": "#/components/schemas/Usuario"
+          },
+          "pedidos": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Pedido"
+            }
+          }
+        }
+      },
+      "Pedido": {
+        "type": "object",
+        "properties": {
+          "productos": {
+            "type": "array",
+            "items": {
+              "allOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "producto": {
+                      "$ref": "#/components/schemas/Producto"
+                    },
+                    "cantidad": {
+                      "type": "number"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "cliente": {
+            "type": "string",
+            "description": "Referencia al cliente que realizo el pedido"
+          },
+          "negocio": {
+            "type": "string",
+            "description": "Referencia al negocio que prepara el pedido"
+          },
+          "repartidor": {
+            "type": "string",
+            "description": "Referencia al repartidor encargado del pedido"
+          },
+          "total": {
+            "type": "number",
+            "description": "Costo total de todos los productos del pedido"
+          },
+          "estado": {
+            "type": "string",
+            "description": "Estado actual del pedido",
+            "enum": [
+              "PENDIENTE",
+              "RECHAZADO",
+              "PREPARANDO",
+              "LISTO",
+              "CANCELADO",
+              "EN_CAMINO",
+              "FINALIZADO"
+            ]
+          }
+        }
+      },
+      "RegistroUsuario": {
+        "type": "object",
+        "properties": {
+          "nombre": {
+            "type": "string",
+            "description": "Nombre del usuario"
+          },
+          "email": {
+            "type": "string",
+            "description": "Email del usuario"
+          },
+          "password": {
+            "type": "string",
+            "description": "Password del usuario"
+          },
+          "telefono": {
+            "type": "number",
+            "description": "Numero de telefono del usuario"
+          },
+          "latitud": {
+            "type": "number",
+            "description": "Latitud del usuario"
+          },
+          "longitud": {
+            "type": "number",
+            "description": "Lontiud del usuario"
+          },
+          "ciudad": {
+            "type": "string",
+            "description": "Ciudad del usuario"
+          },
+          "calle": {
+            "type": "string",
+            "description": "Calle del usuario"
+          },
+          "numero": {
+            "type": "number",
+            "description": "Numero de calle del usuario"
+          },
+          "file": {
+            "type": "string",
+            "description": "Imagen del usuario",
+            "format": "binary"
+          }
+        }
+      },
+      "UpdateUsuario": {
+        "type": "object",
+        "properties": {
+          "latitud": {
+            "type": "number",
+            "description": "Latitud del usuario"
+          },
+          "longitud": {
+            "type": "number",
+            "description": "Lontiud del usuario"
+          },
+          "ciudad": {
+            "type": "string",
+            "description": "Ciudad del usuario"
+          },
+          "calle": {
+            "type": "string",
+            "description": "Calle del usuario"
+          },
+          "numero": {
+            "type": "number",
+            "description": "Numero de calle del usuario"
+          },
+          "file": {
+            "type": "string",
+            "description": "Imagen del usuario",
+            "format": "binary"
+          }
+        }
       }
     }
   }
