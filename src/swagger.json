@@ -7,12 +7,8 @@
   },
   "servers": [
     {
-      "url": "http://https://pedidosya-api.herokuapp.com/",
-      "description": "Servidor de desarrollo"
-    },
-    {
       "url": "http://localhost:8080",
-      "description": "Servidor local"
+      "description": "Local server"
     }
   ],
   "paths": {
@@ -65,6 +61,73 @@
                 }
               }
             }
+          }
+        }
+      }
+    },
+    "/usuarios/password_reset": {
+      "post": {
+        "tags": [
+          "Usuarios"
+        ],
+        "summary": "Envia un mail para resetear la contraseña",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "description": "Email del usuario"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Comfirma si se envio el mail"
+          }
+        }
+      }
+    },
+    "/usuarios/password_change": {
+      "post": {
+        "tags": [
+          "Usuarios"
+        ],
+        "summary": "Cambia la contraseña del usuario",
+        "parameters": [
+          {
+            "name": "auth-token",
+            "in": "header",
+            "required": true,
+            "description": "Token de autorizacion, se puede usar el del mail de reset o si el usuario esta logeado el token normal",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "password": {
+                    "type": "string",
+                    "description": "Nueva contraseña del usuario"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Comfirma si se actualizo la contraseña"
           }
         }
       }
@@ -540,6 +603,10 @@
                         }
                       }
                     }
+                  },
+                  "medio_de_pago": {
+                    "type": "string",
+                    "description": "Opcion de medio de pago del pedido"
                   }
                 }
               }
@@ -796,6 +863,66 @@
           }
         }
       }
+    },
+    "/pedidos/{pedidoId}/puntuar": {
+      "post": {
+        "tags": [
+          "Pedidos"
+        ],
+        "summary": "Puntuar el pedido una vez finalizado",
+        "parameters": [
+          {
+            "name": "pedidoId",
+            "in": "path",
+            "required": true,
+            "description": "ID del pedido seleccionado",
+            "schema": {
+              "type": "string",
+              "minimum": 1
+            }
+          },
+          {
+            "name": "auth-token",
+            "in": "header",
+            "required": true,
+            "description": "Token de autorizacion",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "puntuacion": {
+                    "type": "number",
+                    "description": "Puntuacion entre 1 y 5"
+                  },
+                  "comentario": {
+                    "type": "string",
+                    "description": "Comentario sobre el pedido"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Devuelve el pedido con el estado actualizado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Pedido"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -890,6 +1017,10 @@
           "descuento": {
             "type": "number",
             "description": "Un porcentaje de descuento entre 1 y 100, es opcional"
+          },
+          "tipo_comida": {
+            "type": "string",
+            "description": "Tipo de comida a la que pertenece el producto"
           }
         }
       },
@@ -921,6 +1052,14 @@
           },
           "direccion": {
             "$ref": "#/components/schemas/Direccion"
+          },
+          "puntuacionCount": {
+            "type": "number",
+            "description": "Cantidad de puntuaciones del negocio"
+          },
+          "puntuacionTotal": {
+            "type": "number",
+            "description": "Total de la suma de puntuaciones"
           }
         }
       },
@@ -1012,6 +1151,23 @@
               "EN_CAMINO",
               "FINALIZADO"
             ]
+          },
+          "review": {
+            "type": "object",
+            "properties": {
+              "puntuacion": {
+                "type": "number",
+                "description": "Puntuacion del usuario entre 1 y 5"
+              },
+              "comentario": {
+                "type": "string",
+                "description": "Comentario sobre el pedido"
+              }
+            }
+          },
+          "medio_de_pago": {
+            "type": "string",
+            "description": "Medio de pago seleccionado"
           }
         }
       },
